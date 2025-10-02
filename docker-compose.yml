@@ -1,0 +1,40 @@
+services:
+  weather-collector:
+    build: .
+    volumes:
+      - /mnt/nvme/weather-data/nas-weather-data:/app/data/nas-weather-data
+      - /mnt/nvme/weather-data/config.json:/app/config.json
+      - /mnt/nvme/weather-data/지역코드.csv:/app/지역코드.csv
+      - /mnt/nvme/weather-data/src:/app/src
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app/src
+      - WORKER_ID=${WORKER_ID:-0}
+      - NUM_WORKERS=${NUM_WORKERS:-1}
+    restart: unless-stopped
+    command: >
+      python3 /app/src/scripts/run_collection.py
+      --worker-id ${WORKER_ID}
+      --num-workers ${NUM_WORKERS}
+
+  weather-test:
+    build: .
+    volumes:
+      - /mnt/nvme/weather-data/nas-weather-data:/app/data/nas-weather-data
+      - /mnt/nvme/weather-data/config.json:/app/config.json
+      - /mnt/nvme/weather-data/지역코드.csv:/app/지역코드.csv
+      - /mnt/nvme/weather-data/src:/app/src
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app/src
+    command: python3 -m pytest /app/src/tests/
+
+  weather-monitor:
+    build: .
+    volumes:
+      - /mnt/nvme/weather-data/nas-weather-data:/app/data/nas-weather-data
+      - /mnt/nvme/weather-data/src:/app/src
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app/src
+    command: python3 /app/src/scripts/monitor_data.py
