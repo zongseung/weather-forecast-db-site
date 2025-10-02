@@ -1,2 +1,13 @@
-./mnt/nvme/weather-data/id.txt
-./mnt/nvme/weather-data/일단대기코드
+*.txt
+# 파이썬 캐시
+__pycache__/
+*.pyc
+
+# 테스트 스크립트
+test_*.py
+
+# 임시/실험용 스크립트
+*new.py
+
+# 일댄 대기코드에 있는 놈들은 그냥 다 쳐내기
+*11.py
