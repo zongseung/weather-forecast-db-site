@@ -85,5 +85,6 @@ nas-weather-data/
    ```
    docker compose up -d --build
 2.  다음 이미지 페이지를 확인할 수 있고 원하는 예보, 지역, 동, 기상 데이터 타입을 선택하여 반영 할 수 있음.
-< img width="1508" height="740" alt="image" src="https://github.com/user-attachments/assets/06999fb1-b610-4f1a-bdbb-7085fe12b22e" />
+<img width="1508" height="740" alt="image" src="https://github.com/user-attachments/assets/e7dd955a-535e-4209-a3c5-4ce332963f63" />
+
 
