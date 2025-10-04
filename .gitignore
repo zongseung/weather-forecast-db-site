@@ -1,3 +1,55 @@
+<<<<<<< HEAD
+# ----------------
+# Node.js / Next.js (frontend)
+# ----------------
+node_modules/
+.next/
+out/
+.vercel/
+.turbo/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ----------------
+# Python (backend)
+# ----------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# python cache
+*.pyc
+
+# 테스트 및 임시 스크립트
+test_*.py
+*new.py
+*11.py
+
+# ----------------
+# System / IDE
+# ----------------
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+=======
 *.txt
 # 파이썬 캐시
 __pycache__/
@@ -11,3 +63,4 @@ test_*.py
 
 # 일댄 대기코드에 있는 놈들은 그냥 다 쳐내기
 *11.py
+>>>>>>> 59b2f9e2b4ef311b683bf66e16d46497cf63be32
