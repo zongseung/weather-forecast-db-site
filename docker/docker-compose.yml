@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    image: short-term-forecast-backend
+    container_name: short-term-forecast-backend
+    build:
+      context: ..
+      dockerfile: docker/backend.Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - /Users/ijongseung/Library/CloudStorage/GoogleDrive-solution.hkn@gmail.com/내 드라이브/단기예보:/app/data
+    environment:
+      - WEATHER_DATA_PATH=/app/data
+
+  frontend:
+    image: short-term-forecast-frontend
+    container_name: short-term-forecast-frontend
+    build:
+      context: ..
+      dockerfile: docker/frontend.Dockerfile
+      args:
+        - NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:8000

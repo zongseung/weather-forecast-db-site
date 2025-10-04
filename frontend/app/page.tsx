@@ -5,6 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Download, ArrowLeft, CheckCircle2, Cloud, CloudRain, CloudSun } from "lucide-react"
 
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "http://localhost:8081" // 필요시 .env로 변경 가능
+
 const forecastTypes = [
   { id: "short", name: "단기예보", description: "3일간의 기상 예보 데이터" },
   { id: "ultra-short", name: "초단기예보", description: "6시간 이내의 상세 예보" },
@@ -77,7 +80,7 @@ export default function WeatherDataPlatform() {
             return {
               Level1: values[0]?.trim() || "",
               Level2: values[1]?.trim() || "",
-              Level3: values[2]?.trim() || "",
+              Level3: (values[2]?.trim() || "").replace(/·/g, "."),
               ReqList_Last: values[3]?.trim() || "",
             }
           })
@@ -113,7 +116,7 @@ export default function WeatherDataPlatform() {
       .filter(Boolean)
       .sort()
 
-  const handleForecastSelect = (forecastId: string, forecastName: string) => {
+  const handleForecastSelect = (_forecastId: string, forecastName: string) => {
     setSelectedForecast(forecastName)
     setCurrentStep("level1")
   }
@@ -156,27 +159,44 @@ export default function WeatherDataPlatform() {
     }
   }
 
-  // ✅ 수정된 CSV 다운로드 함수
-  const handleDownload = () => {
+  // ✅ CSV 다운로드 (FastAPI 연동)
+  const handleDownload = async () => {
     if (!selectedLevel1 || !selectedLevel2 || !selectedLevel3 || selectedVariables.length === 0) {
       alert("지역과 변수를 모두 선택하세요.")
       return
     }
 
-    const url = new URL("http://localhost:8081/weather/csv")
+    const url = new URL(`${BACKEND_URL}/weather/csv`)
     url.searchParams.append("city", selectedLevel1)
     url.searchParams.append("district", selectedLevel2)
     url.searchParams.append("town", selectedLevel3)
-    url.searchParams.append("variable", selectedVariables[0])
+    selectedVariables.forEach(variable => {
+      url.searchParams.append("variable", variable)
+    })
     url.searchParams.append("start", "20240101")
     url.searchParams.append("end", "20240131")
 
-    const link = document.createElement("a")
-    link.href = url.toString()
-    link.download = `${selectedLevel3}_${selectedVariables[0]}.csv`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    try {
+      const response = await fetch(url.toString())
+      if (!response.ok) {
+        throw new Error(`다운로드 실패: ${response.statusText}`)
+      }
+
+      const blob = await response.blob()
+      const downloadUrl = window.URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = downloadUrl
+      const zipFilename = `${selectedLevel3}_${'20240101'}_${'20240131'}.zip`
+      link.download = zipFilename
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(downloadUrl)
+
+    } catch (error) {
+      console.error("다운로드 중 오류 발생:", error)
+      alert("다운로드 중 오류가 발생했습니다.")
+    }
   }
 
   const currentVariables = variablesByType[selectedForecast] || []
@@ -287,7 +307,7 @@ export default function WeatherDataPlatform() {
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                          <p>TXT 형식 제공</p>
+                          <p>CSV file 형식 제공</p>
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="h-1.5 w-1.5 rounded-full bg-primary" />
@@ -467,8 +487,7 @@ export default function WeatherDataPlatform() {
                       </div>
                       <div className="space-y-1 text-muted-foreground">
                         <p className="text-base">
-                          <span className="font-medium text-foreground">지역:</span> {selectedLevel1} › {selectedLevel2}{" "}
-                          › {selectedLevel3}
+                          <span className="font-medium text-foreground">지역:</span> {selectedLevel1} › {selectedLevel2} › {selectedLevel3}
                         </p>
                         <p className="text-base">
                           <span className="font-medium text-foreground">예보:</span> {selectedForecast}
