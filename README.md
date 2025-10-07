@@ -6,14 +6,14 @@
 
 1. `config.json` 파일을 열어서 로그인 정보를 설정하세요:
    ```
-  "login": {
-    "id": "",
-    "password": ""
-  },
-  "date_range": {
-    "start_date": "2024-01-01",
-    "end_date": "2024-01-31"
-  },
+     "login": {
+       "id": "",
+       "password": ""
+     },
+     "date_range": {
+       "start_date": "2024-01-01",
+       "end_date": "2024-01-31"
+     },
  
    ```
 
